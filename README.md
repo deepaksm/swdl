@@ -1,5 +1,5 @@
 swdl
 ====
-Added a few lines.
 
-Deepak
+Default readme file added by GIThub
+and modified by deepak
