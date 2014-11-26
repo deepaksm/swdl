@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+	<context:component-scan base-package="net.juniper.download.ewmd" />
+	<context:annotation-config />
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="ewmd-messages" />
+	</bean>
+
+
+	<jee:jndi-lookup id="ewmdDS" jndi-name="java:comp/env/jdbc/ewmd" />
+	<jee:jndi-lookup id="entDS" jndi-name="java:comp/env/jdbc/entitlement" />
+	<jee:jndi-lookup id="mailSession" jndi-name="java:comp/env/mail/Session" />
+
+
+
+	<bean id="com" class="net.juniper.download.ewmd.agile.service.CommonSvcImpl">
+		<property name="comDao">
+			<ref bean="comDao" />
+		</property>
+	</bean>
+
+
+
+	<bean id="comDao" class="net.juniper.download.ewmd.agile.dao.impl.CommonsDAOImpl" />
+
+	<bean id="parser" class="net.juniper.download.ewmd.agile.service.AgileParser" />
+
+
+	<bean id="strUtil" class="net.juniper.download.common.util.StringUtil" />
+
+	<bean id="softwareUtil" class="net.juniper.download.common.util.SoftwareUtil" />
+
+	<bean id="propFileUtil" class="net.juniper.download.common.util.PropertyFileUtil" />
+
+	<bean id="emailSvc" class="net.juniper.download.ewmd.agile.service.mail.EmailSvc" />
+
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="runMeJob" />
+		<property name="cronExpression" value="* 15 */4 * * ?" />
+	</bean>
+
+	<bean name="runMeJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+
+		<property name="jobClass"
+			value="net.juniper.download.ewmd.agile.service.AgileEwmdService" />
+
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="com" value-ref="com" />
+				<entry key="parser" value-ref="parser" />
+				<entry key="strUtil" value-ref="strUtil" />
+				<entry key="softwareUtil" value-ref="softwareUtil" />
+				<entry key="propFileUtil" value-ref="propFileUtil" />
+				<entry key="emailSvc" value-ref="emailSvc" />
+			</map>
+		</property>
+
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger" />
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- SET default mail properties -->
+	 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+      <property name="session" ref="mailSession"/>
+   </bean>
+
+
+	<import resource="hibernateContext.xml" />
+	<import resource="controllersContext.xml" />
+
+</beans>

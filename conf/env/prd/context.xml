@@ -1,0 +1,48 @@
+<Context path="/ewmd" reloadable="true" crossContext="true">
+    
+   <Resource
+            name="jdbc/ewmd"
+            auth="Container"
+            type="javax.sql.DataSource"
+            driverClassName="oracle.jdbc.OracleDriver"
+            maxIdle="2"
+            maxActive="10"
+            maxWait="10000"
+            validationQuery="select 1 from dual"
+            username="ewmd"
+            password="ewmdprod"
+            url="jdbc:oracle:thin:@p-sw-download-db1:1599:PESD"
+            removeAbandoned="true"
+            removeAbandonedTimeout="60"
+            logAbandoned="true"/> 
+           
+   <Resource
+            name="jdbc/entitlement"
+            auth="Container"
+            type="javax.sql.DataSource"
+            maxActive="10"
+            maxIdle="5"
+            maxWait="10000"
+            username="ent"
+            password="entprod"
+            driverClassName="oracle.jdbc.OracleDriver"
+            url="jdbc:oracle:thin:@iceman:1521:WAPP"
+            validationQuery="select 1 from dual"
+            removeAbandoned="true"
+            removeAbandonedTimeout="60"
+            logAbandoned="true"/>
+   
+     <Resource name="mail/Session"
+              auth="Container"
+              type="javax.mail.Session"
+              username="admin"
+              password="1"
+              mail.debug="false"
+              mail.user="admin"
+              mail.password="1"
+              mail.transport.protocol="smtp"
+              mail.smtp.host="mail.juniper.net"
+              mail.smtp.auth="false"
+              mail.smtp.port="25"
+              mail.smtp.starttls.enable="false"/> 
+</Context>
